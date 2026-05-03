@@ -24,7 +24,7 @@ export const withAndroidWidgets: ConfigPlugin<WithExpoAndroidWidgetsProps> = (
   userOptions
 ) => {
   const options = getDefaultedOptions(userOptions);
-  config = withModule(config, options);
+  // config = withModule(config, options);
 
   config = withWidgetManifest(config, options);
 
