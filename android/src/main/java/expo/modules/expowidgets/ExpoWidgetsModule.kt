@@ -36,6 +36,28 @@ class ExpoWidgetsModule : Module() {
           }
       }
     }
+
+    Function("setWidgetDataMemory") { json: String, packageName: String -> 
+      val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+      intent.putExtra("widgetDataRam", json)
+      val widgetManager = AppWidgetManager.getInstance(context)
+      val widgetProviders = context.packageManager.queryBroadcastReceivers(
+          Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE),
+          PackageManager.GET_META_DATA
+      )
+
+      for (provider in widgetProviders) {
+          if (provider.activityInfo.packageName == packageName) {
+              val providerComponent = ComponentName(
+                  provider.activityInfo.packageName, 
+                  provider.activityInfo.name
+              )
+              val widgetIds = widgetManager.getAppWidgetIds(providerComponent)
+              intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+              context.sendBroadcast(intent)
+          }
+      }
+    }
   }
 
   private val context
