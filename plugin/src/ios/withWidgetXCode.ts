@@ -80,6 +80,17 @@ export const withWidgetXCode = (
     copyFilesToWidgetProject(widgetFolderPath, targetPath)
     copyModuleDependencies(options, widgetFolderPath)
 
+    // Check if target already exists
+    const nativeTargets = project.pbxNativeTargetSection();
+    const isTargetExists = Object.values(nativeTargets).some(
+      (target: any) => target.name === targetName || target.name === `"${targetName}"`
+    );
+
+    if (isTargetExists) {
+      Logging.logger.debug(`Widget target ${targetName} already exists. Skipping XCode configuration.`);
+      return props;
+    }
+
     addFilesToWidgetProject(project, { widgetFolderPath, iosProjectPath, targetUuid, targetName, projectName: projectName || 'MyProject', expoConfig: props, options });
 
     return props
