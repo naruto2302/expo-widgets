@@ -69,18 +69,14 @@ end
     comment: "#",
   })
 
-  const withPodInstaller = mergeContents({
-    tag: "widget_target",
-    src: withAppExtFixPt2.contents,
-    newSrc: podInstaller,
-    anchor: /$/,
-    offset: 0,
-    comment: "#",
-  });
+  let finalContent = withAppExtFixPt2.contents;
+  if (!finalContent.includes(`target '${targetName}' do`)) {
+    finalContent += `\n${podInstaller}`;
+  }
 
   Logging.logger.debug('Updating podfile')
 
-  fs.writeFileSync(podFilePath, withPodInstaller.contents);
+  fs.writeFileSync(podFilePath, finalContent);
 
   return config;
 }
