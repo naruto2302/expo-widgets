@@ -82,9 +82,11 @@ export const withWidgetXCode = (
 
     // Check if target already exists
     const nativeTargets = project.pbxNativeTargetSection();
-    const isTargetExists = Object.values(nativeTargets).some(
-      (target: any) => target.name === targetName || target.name === `"${targetName}"`
-    );
+    const isTargetExists = Object.keys(nativeTargets).some((key) => {
+      if (key.endsWith('_comment')) return false;
+      const target = nativeTargets[key];
+      return target.name === targetName || target.name === `"${targetName}"`;
+    });
 
     if (isTargetExists) {
       Logging.logger.debug(`Widget target ${targetName} already exists. Skipping XCode configuration.`);

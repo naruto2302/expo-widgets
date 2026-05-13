@@ -15,6 +15,20 @@ export const addWidgetExtensionTarget = (project: XcodeProject, config: ExpoConf
         targetName = name.trim(),
         targetBundleId = bundleId;
 
+    // 🛡 Idempotency Check: If target already exists, return it
+    const nativeTargets = project.pbxNativeTargetSection();
+    for (const key in nativeTargets) {
+        if (key.endsWith('_comment')) continue;
+        const pbxNativeTarget = nativeTargets[key];
+        if (pbxNativeTarget.name === targetName || pbxNativeTarget.name === `"${targetName}"`) {
+            Logging.logger.debug(`Target ${targetName} already exists. Returning existing target.`);
+            return {
+                uuid: key,
+                pbxNativeTarget,
+            };
+        }
+    }
+
     // Check type against list of allowed target types
     if (!targetName) {
         throw new Error("Target name missing.");
